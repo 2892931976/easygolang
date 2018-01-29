@@ -53,7 +53,7 @@ func PPCmd(command string) error {
 
 	switch cmdType {
 	case "mem":
-		suffix := time.Now().Format("2006010215")
+		suffix := time.Now().Format("200601021504")
 		if len(fields) >= 2 {
 			suffix = fields[1]
 		}
@@ -69,7 +69,7 @@ func PPCmd(command string) error {
 			}
 		}
 
-		suffix := time.Now().Format("2006010215")
+		suffix := time.Now().Format("200601021504")
 		if len(fields) >= 3 {
 			suffix = fields[2]
 		}
