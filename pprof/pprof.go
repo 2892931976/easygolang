@@ -10,27 +10,21 @@ import (
 )
 
 func PPMem(suffix string) error {
-	fmt.Printf("PPMem start. suffix: [%v]\n", suffix)
+	fp, err := os.Create(fmt.Sprintf("mem.pprof.%v", suffix))
+	if err != nil {
+		return errors.New(fmt.Sprintf("PPMem failed. suffix: [%v], err: [%v]", suffix, err))
+	}
+	defer fp.Close()
 
-	for _, name := range []string{
-		"heap", "block", "goroutine", "threadcreate",
-	} {
-		fp, err := os.OpenFile(fmt.Sprintf("%v.pprof.%v", name, suffix), os.O_RDWR|os.O_CREATE, 0644)
-		if err != nil {
-			return errors.New(fmt.Sprintf("PPMem failed. suffix: [%v], err: [%v]", suffix, err))
-		}
-		if err := pprof.Lookup(name).WriteTo(fp, 1); err != nil {
-			fp.Close()
-			return errors.New(fmt.Sprintf("PPMem failed. suffix: [%v], err: [%v]", suffix, err))
-		}
-		fp.Close()
+	if err := pprof.WriteHeapProfile(fp); err != nil {
+		return errors.New(fmt.Sprintf("PPMem failed. suffix: [%v], err: [%v]", suffix, err))
 	}
 
 	return nil
 }
 
 func PPCpu(suffix string, duration time.Duration) error {
-	fp, err := os.OpenFile(fmt.Sprintf("cpu.pprof.%v", suffix), os.O_RDWR|os.O_CREATE, 0644)
+	fp, err := os.Create(fmt.Sprintf("cpu.pprof.%v", suffix))
 	if err != nil {
 		return errors.New(fmt.Sprintf("PPCpu failed. suffix: [%v], duration: [%v], err: [%v]", suffix, duration, err))
 	}
@@ -39,8 +33,9 @@ func PPCpu(suffix string, duration time.Duration) error {
 	if err := pprof.StartCPUProfile(fp); err != nil {
 		return errors.New(fmt.Sprintf("PPCpu failed. suffix: [%v], duration: [%v], err: [%v]", suffix, duration, err))
 	}
+	defer pprof.StopCPUProfile()
+
 	time.Sleep(duration)
-	pprof.StopCPUProfile()
 
 	return nil
 }
