@@ -45,21 +45,21 @@ func PPCpu(suffix string, duration time.Duration) error {
 	return nil
 }
 
-// "ppmem [suffix=yyyymmddhh]" 生成内存 pprof 文件
-// "ppcpu [duration=60s] [suffix=yyyymmddhh]" 生成 cpu pprof 文件
+// "mem [suffix=yyyymmddhh]" 生成内存 pprof 文件
+// "cpu [duration=60s] [suffix=yyyymmddhh]" 生成 cpu pprof 文件
 func PPCmd(command string) error {
 	fields := strings.Split(command, " ")
 	cmdType := fields[0]
 
 	switch cmdType {
-	case "ppmem":
+	case "mem":
 		suffix := time.Now().Format("2006010215")
 		if len(fields) >= 2 {
 			suffix = fields[1]
 		}
 
 		return PPMem(suffix)
-	case "ppcpu":
+	case "cpu":
 		duration := 60 * time.Second
 		if len(fields) >= 2 {
 			var err error
